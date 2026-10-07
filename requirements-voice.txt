@@ -1,0 +1,5 @@
+-r requirements.txt
+sounddevice>=0.4.6
+numpy>=1.26
+SpeechRecognition>=3.10
+pyttsx3>=2.90

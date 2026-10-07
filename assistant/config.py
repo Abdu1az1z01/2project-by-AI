@@ -35,6 +35,7 @@ class Config:
     confirm_in_chat: bool
     autonomous: AutonomousConfig
     data_dir: Path
+    voice: dict = field(default_factory=dict)
 
     @classmethod
     def load(cls, path: str | Path) -> "Config":
@@ -57,6 +58,7 @@ class Config:
                 goals=str(auto.get("goals", "")),
             ),
             data_dir=_expand(raw.get("data_dir", "~/.ai-assistant")),
+            voice=dict(raw.get("voice") or {}),
         )
         cfg.data_dir.mkdir(parents=True, exist_ok=True)
         for root in cfg.write_roots:

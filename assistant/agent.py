@@ -35,7 +35,7 @@ SYSTEM_PROMPT = """Ты — персональный AI-помощник, раб
 
 
 class Agent:
-    def __init__(self, cfg: Config, tools: ToolBox, verbose: bool = True):
+    def __init__(self, cfg: Config, tools: ToolBox, verbose: bool = True, extra_instructions: str = ""):
         self.cfg = cfg
         self.tools = tools
         self.verbose = verbose
@@ -45,7 +45,7 @@ class Agent:
             read_roots=", ".join(map(str, cfg.read_roots)) or "(нет)",
             write_roots=", ".join(map(str, cfg.write_roots)) or "(нет)",
             commands=", ".join(cfg.allowed_commands) or "(запуск команд запрещён)",
-        )
+        ) + extra_instructions
 
     def _log(self, text: str) -> None:
         if self.verbose:
@@ -100,7 +100,7 @@ class Agent:
             messages.append({"role": "user", "content": results})
 
     # ---------- автономный цикл ----------
-    def autonomous_cycle(self, events: list[str]) -> str:
+    def autonomous_cycle(self, events: list[str], extra: str = "") -> str:
         """Один самостоятельный цикл анализа. Каждый цикл — новый диалог; опыт переносится через память."""
         auto = self.cfg.autonomous
         prompt = (
@@ -111,6 +111,7 @@ class Agent:
             "Проанализируй, что произошло, и реши, нужно ли что-то делать ради целей. "
             "Если ничего делать не нужно — просто кратко ответь почему. "
             "В конце сохрани через remember короткий итог, если узнал что-то полезное."
+            + extra
         )
         return self.run([{"role": "user", "content": prompt}], max_tool_calls=auto.max_tool_calls_per_cycle)
 
